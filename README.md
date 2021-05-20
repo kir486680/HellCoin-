@@ -1,0 +1,2 @@
+# HellCoin-
+The HellCoin protocol
