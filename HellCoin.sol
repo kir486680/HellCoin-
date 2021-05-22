@@ -867,7 +867,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
 	) external;
 }
 
-contract Braveheart is Context, IERC20, Ownable {
+contract HellCoin is Context, IERC20, Ownable {
 	using SafeMath for uint256;
 	using Address for address;
 
@@ -885,14 +885,14 @@ contract Braveheart is Context, IERC20, Ownable {
 	uint256 private _rTotal = (MAX - (MAX % _tTotal));
 	uint256 private _tFeeTotal;
 
-	string private _name = "Braveheart";
-	string private _symbol = "Braveheart";
+	string private _name = "RETARDCOIN";
+	string private _symbol = "RETARD";
 	uint8 private _decimals = 9;
 
-	uint256 public _taxFee = 3; // goes to the holders
+	uint256 public _taxFee = 3; // goes to the Clan
 	uint256 private _prreviousTaxFee = _taxFee;
 
-	uint256 public _liquidityFee = 5; // goes to the liquidity pool
+	uint256 public _liquidityFee = 5; // goes to the war fund
 	uint256 private _previousLiquidityFee = _liquidityFee;
 
 	IUniswapV2Router02 public immutable uniswapV2Router;
